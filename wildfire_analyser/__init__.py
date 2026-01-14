@@ -1,4 +1,14 @@
-from .fire_assessment.post_fire_assessment import PostFireAssessment
-from .fire_assessment.deliverable import Deliverable
-from .fire_assessment.fire_severity import FireSeverity
-__all__ = ["PostFireAssessment", "Deliverable", "FireSeverity"]
+# wildfire_analyser/__init__.py
+
+from wildfire_analyser.fire_assessment.deliverables import Deliverable
+from wildfire_analyser.fire_assessment.dependencies import Dependency
+from wildfire_analyser.fire_assessment.dependency_resolver import resolve_dependencies
+
+
+__all__ = [
+    "Deliverable",
+    "Dependency",
+    "resolve_dependencies",
+    "authenticate_gee",
+    "build_pre_post_fire_mosaics",
+]
