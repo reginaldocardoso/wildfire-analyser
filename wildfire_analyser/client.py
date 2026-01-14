@@ -1,6 +1,7 @@
 import logging
 import os
 from dotenv import load_dotenv
+import argparse
 from pathlib import Path
 
 from wildfire_analyser.fire_assessment.post_fire_assessment import PostFireAssessment
@@ -21,14 +22,39 @@ def main():
     if not gcs_bucket_name:
         raise RuntimeError("GCS_BUCKET_NAME not set")
 
-    # Path to the GeoJSON polygon used as the Region of Interest (ROI)
-    geojson_path = os.path.join("polygons", "eejatai.geojson")
+    parser = argparse.ArgumentParser(
+        description="Post-fire assessment using Google Earth Engine"
+    )
+
+    parser.add_argument(
+        "--roi",
+        required=True,
+        help="Path to ROI GeoJSON file"
+    )
+
+    parser.add_argument(
+        "--start-date",
+        required=True,
+        help="Start date (pre-fire) in YYYY-MM-DD format"
+    )
+
+    parser.add_argument(
+        "--end-date",
+        required=True,
+        help="End date (post-fire) in YYYY-MM-DD format"
+    )
+
+    args = parser.parse_args()
+
+    geojson_path = Path(args.roi).expanduser().resolve()
+    if not geojson_path.exists():
+        raise FileNotFoundError(f"GeoJSON not found: {geojson_path}")
 
     runner = PostFireAssessment(
         gee_key_json=gee_key_json,
         geojson_path=str(geojson_path),
-        start_date="2024-09-01",
-        end_date="2024-11-08",
+        start_date=args.start_date,
+        end_date=args.end_date,
         deliverables=[
             Deliverable.RGB_PRE_FIRE,
             Deliverable.RGB_POST_FIRE,
