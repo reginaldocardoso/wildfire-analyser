@@ -112,3 +112,9 @@ python3 -m wildfire_analyser.client
 ```bash
 deactivate
 ```
+
+
+
+rm -rf dist/*
+python -m build
+twine upload dist/*
