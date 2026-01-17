@@ -6,11 +6,11 @@ def burn_severity_visual(image: ee.Image, roi: ee.Geometry) -> ee.Image:
         min=0,
         max=4,
         palette=[
-            "00FF00",  # Unburned
-            "FFFF00",  # Low
-            "FFA500",  # Moderate
-            "FF0000",  # High
-            "8B4513",  # Very High
+            "36a402",  # Unburned 
+            "fbfb01",  # Low
+            "feb012",  # Moderate
+            "f50003",  # High
+            "6a044d",  # Very High
         ],
     )
 

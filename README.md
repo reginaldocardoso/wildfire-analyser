@@ -1,6 +1,28 @@
 # wildfire-analyser
 
-Python project for analyzing wildfires in natural reserves.
+Python project for **post-fire assessment and burned area analysis** using **Sentinel-2 imagery** and **Google Earth Engine (GEE)**.
+
+This project supports multiple spectral indices (**dNBR, dNDVI, RBR**), visual products, and paper-ready burned area statistics.
+
+---
+
+## Scientific Background
+
+This project is **based on the peer-reviewed study**:
+
+> **Spatial and statistical analysis of burned areas with Landsat-8/9 and Sentinel-2 satellites: 2023 Çanakkale forest fires**
+> **Authors:** Deniz Bitek, Fusun Balik Sanli, Ramazan Cuneyt Erenoglu
+> **Study area:** Çanakkale Province, Turkey
+
+The methodology implemented in `wildfire-analyser` follows the **same analytical framework and burn severity thresholds** described in the paper, particularly for the **Sentinel-2–based analysis**, including:
+
+* dNBR, dNDVI and RBR indices
+* Burn severity classification tables
+* Area statistics in hectares and percentage
+
+Minor numerical differences may occur due to cloud masking, spatial sampling, and Google Earth Engine implementation details.
+
+---
 
 ## Installation and Usage
 
@@ -16,13 +38,15 @@ source venv/bin/activate
 pip install wildfire-analyser
 ```
 
-### Required Files Before Running the Client
+---
 
-Before running the client, you **must** prepare two items:
+## Required Files Before Running the Client
+
+Before running the client, you **must** prepare the following items:
 
 ---
 
-#### **1. Add a GeoJSON polygon**
+### 1. Add a GeoJSON polygon (ROI)
 
 Create a folder named `polygons` in the project root and place your ROI polygon file inside it:
 
@@ -33,15 +57,15 @@ Create a folder named `polygons` in the project root and place your ROI polygon 
 └── venv/
 ```
 
-An example GeoJSON file is available in the repository.
+Example GeoJSON files are available in the repository (e.g. `canakkale_aoi_1.geojson`).
 
 ---
 
-#### **2. Create the `.env` file with GEE authentication data**
+### 2. Create the `.env` file with GEE credentials
 
 In the project root, add a `.env` file containing your Google Earth Engine authentication variables.
 
-A `.env` template is also available in the GitHub repository.
+A `.env.template` file is available in the repository.
 
 ```
 /tmp/test/
@@ -52,67 +76,122 @@ A `.env` template is also available in the GitHub repository.
 
 ---
 
-### Running the Client
+## Running the Client (Standard Mode)
 
 After adding the `.env` file and your GeoJSON polygon:
+
+```bash
+python3 -m wildfire_analyser.client \
+  --roi polygons/canakkale_aoi_1.geojson \
+  --start-date 2023-07-01 \
+  --end-date 2023-07-21 \
+  --deliverables \
+    DNBR_VISUAL \
+    DNDVI_VISUAL \
+    RBR_VISUAL \
+    DNBR_AREA_STATISTICS \
+    DNDVI_AREA_STATISTICS \
+    RBR_AREA_STATISTICS \
+  --days-before-after 1
+
+```
+
+This will:
+
+* Run the post-fire assessment pipeline
+* Generate **visual thumbnail URLs**
+* Generate **scientific GeoTIFF outputs** (when applicable)
+* Compute **burned area statistics**
+* Print all results to the terminal
+
+---
+
+## Deliverables
+
+You may explicitly select deliverables using `--deliverables`.
+
+### Scientific products
+
+* `RGB_PRE_FIRE`
+* `RGB_POST_FIRE`
+* `NDVI_PRE_FIRE`
+* `NDVI_POST_FIRE`
+* `NBR_PRE_FIRE`
+* `NBR_POST_FIRE`
+* `DNDVI`
+* `DNBR`
+* `RBR`
+
+### Visual products
+
+* `RGB_PRE_FIRE_VISUAL`
+* `RGB_POST_FIRE_VISUAL`
+* `DNDVI_VISUAL`
+* `DNBR_VISUAL`
+* `RBR_VISUAL`
+* `DNBR_SEVERITY_VISUAL`
+
+### Severity maps and statistics
+
+* `DNBR_SEVERITY_MAP`
+* `DNBR_AREA_STATISTICS`
+* `DNDVI_AREA_STATISTICS`
+* `RBR_AREA_STATISTICS`
+
+Example:
 
 ```bash
 python3 -m wildfire_analyser.client \
    --roi polygons/canakkale_aoi_1.geojson \
    --start-date 2023-07-01 \
    --end-date 2023-07-21 \
+   --deliverables DNBR_VISUAL DNBR_AREA_STATISTICS \
    --days-before-after 1
 ```
 
-Possible options for --deliverables are:
-   RGB_PRE_FIRE,
-   RGB_POST_FIRE,
-   NDVI_PRE_FIRE,
-   NDVI_POST_FIRE,
-   NBR_PRE_FIRE,
-   NBR_POST_FIRE,
-   DNDVI,
-   DNBR,
-   RBR,
-   BURN_SEVERITY_MAP,
-   RGB_PRE_FIRE_VISUAL,
-   RGB_POST_FIRE_VISUAL,
-   DNBR_VISUAL,
-   RBR_VISUAL,
-   BURN_SEVERITY_VISUAL,
-   BURNED_AREA_STATISTICS,
-   
-This will start the analysis process, generate visual thumbnail links for use by the frontend, and save the scientific GeoTIFF images to the GCP bucket.
-All links will be displayed in the terminal.
+If `--deliverables` is **not provided**, **all available deliverables** are generated.
 
-for help, type:
+---
+
+## Paper Preset Mode (Reproducibility)
+
+The client also supports **paper presets**, which are predefined experimental configurations designed to reproduce published results.
+
+### Example preset: `PAPER_DENIZ_FUSUN_RAMAZAN`
+
+Run:
+
+```bash
+python3 -m wildfire_analyser.client \
+  --deliverables PAPER_DENIZ_FUSUN_RAMAZAN
+```
+
+This preset:
+
+* Executes the analysis for **two distinct burned areas**
+* Uses **paper-aligned temporal windows**
+* Generates **only visual outputs and statistics**
+* Does **not export scientific GeoTIFFs**
+* Prints results **grouped by area**
+
+Internally, it runs:
+
+| Area   | ROI                       | Pre-fire   | Post-fire  |
+| ------ | ------------------------- | ---------- | ---------- |
+| Area 1 | `canakkale_aoi_1.geojson` | 2023-07-01 | 2023-07-21 |
+| Area 2 | `canakkale_aoi_2.geojson` | 2023-07-31 | 2023-08-30 |
+
+---
+
+## Help
+
+For help and full usage information:
 
 ```bash
 python3 -m wildfire_analyser.client --help
 ```
 
-You should see something like this:
-
-```bash
-usage: client.py [-h] --roi ROI --start-date START_DATE --end-date END_DATE
-                 [--deliverables DELIVERABLES [DELIVERABLES ...]]
-                 [--days-before-after DAYS_BEFORE_AFTER]
-
-Post-fire assessment using Google Earth Engine
-
-options:
-  -h, --help            show this help message and exit
-  --roi ROI             Path to ROI GeoJSON file
-  --start-date START_DATE
-                        Start date (pre-fire) in YYYY-MM-DD format
-  --end-date END_DATE   End date (post-fire) in YYYY-MM-DD format
-  --deliverables DELIVERABLES [DELIVERABLES ...]
-                        List of deliverables to generate. If not provided, all available
-                        deliverables are generated. Example: --deliverables RGB_PRE_FIRE DNBR
-  --days-before-after DAYS_BEFORE_AFTER
-                        Number of days before and after the event date to search imagery
-                        (default: 30)
-```
+---
 
 ## Setup Instructions for Developers
 
@@ -136,16 +215,17 @@ source venv/bin/activate
 ```
 
 4. **Install dependencies**
-   Make sure the virtual environment is activated, then run:
 
 ```bash
 pip install -r requirements.txt
 ```
 
 5. **Configure environment variables**
-   Copy your version of `.env` file to the root folder with your GEE authentication credentials. A template file `.env.template` is provided as an example.
 
-6. **Run the sample client application**
+Copy your `.env` file to the project root.
+A `.env.template` file is provided.
+
+6. **Run the sample client**
 
 ```bash
 python3 -m wildfire_analyser.client \
@@ -155,18 +235,31 @@ python3 -m wildfire_analyser.client \
    --days-before-after 1
 ```
 
+---
+
 ## Useful Commands
 
-* **Deactivate the virtual environment**:
+### Deactivate the virtual environment
 
 ```bash
 deactivate
 ```
 
-* **Build a new PyPi lib and publish **:
+### Build and publish a new PyPI release
 
 ```bash
 rm -rf dist/*
 python -m build
 twine upload dist/*
 ```
+
+---
+
+## Citation
+
+If you use this software for scientific work, please cite:
+
+> *Spatial and statistical analysis of burned areas with Landsat-8/9 and Sentinel-2 satellites: 2023 Çanakkale forest fires*
+> Deniz Bitek, Fusun Balik Sanli, Ramazan Cuneyt Erenoglu.
+
+And cite this repository as the reference implementation.

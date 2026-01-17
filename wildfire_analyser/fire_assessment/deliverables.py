@@ -20,18 +20,21 @@ class Deliverable(Enum):
 
     RBR = auto()
 
-    BURN_SEVERITY_MAP = auto()
+    DNBR_SEVERITY_MAP = auto()
 
     # ─────────────────────────────
     # Estatísticas
     # ─────────────────────────────
-    BURNED_AREA_STATISTICS = auto()
+    DNBR_AREA_STATISTICS = auto()
+    DNDVI_AREA_STATISTICS = auto()
+    RBR_AREA_STATISTICS = auto()
 
     # ─────────────────────────────
     # Visuais (JPEG / Thumbnail)
     # ─────────────────────────────
     RGB_PRE_FIRE_VISUAL = auto()
     RGB_POST_FIRE_VISUAL = auto()
+    DNDVI_VISUAL = auto()
     DNBR_VISUAL = auto()
     RBR_VISUAL = auto()
-    BURN_SEVERITY_VISUAL = auto()
+    DNBR_SEVERITY_VISUAL = auto()

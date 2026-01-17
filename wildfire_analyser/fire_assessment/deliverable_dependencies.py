@@ -15,14 +15,17 @@ DELIVERABLE_DEPENDENCIES = {
 
     Deliverable.RBR: {Dependency.RBR},
 
-    Deliverable.BURN_SEVERITY_MAP: {Dependency.BURN_SEVERITY},
+    Deliverable.DNBR_SEVERITY_MAP: {Dependency.DNBR_SEVERITY},
 
-    Deliverable.BURNED_AREA_STATISTICS: {Dependency.BURNED_AREA_STATISTICS},
+    Deliverable.DNBR_AREA_STATISTICS: {Dependency.DNBR_AREA_STATISTICS},
+    Deliverable.DNDVI_AREA_STATISTICS: {Dependency.DNDVI_AREA_STATISTICS},
+    Deliverable.RBR_AREA_STATISTICS: {Dependency.RBR_AREA_STATISTICS},
 
     # visuals (same data, different representation)
     Deliverable.RGB_PRE_FIRE_VISUAL: {Dependency.RGB_PRE_FIRE},
     Deliverable.RGB_POST_FIRE_VISUAL: {Dependency.RGB_POST_FIRE},
+    Deliverable.DNDVI_VISUAL: {Dependency.DNDVI},
     Deliverable.RBR_VISUAL: {Dependency.RBR},
     Deliverable.DNBR_VISUAL: {Dependency.DNBR},
-    Deliverable.BURN_SEVERITY_VISUAL: {Dependency.BURN_SEVERITY},
+    Deliverable.DNBR_SEVERITY_VISUAL: {Dependency.DNBR_SEVERITY},
 }

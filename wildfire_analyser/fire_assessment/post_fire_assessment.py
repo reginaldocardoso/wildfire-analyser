@@ -73,8 +73,8 @@ class PostFireAssessment:
 
         for d, value in outputs.items():
 
-            if d == Deliverable.BURNED_AREA_STATISTICS:
-                result["statistics"] = value
+            if d.name.endswith("_AREA_STATISTICS"):
+                result["statistics"][d.name] = value
                 continue
 
             if d in VISUAL_RENDERERS:

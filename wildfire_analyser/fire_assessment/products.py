@@ -239,8 +239,8 @@ def compute_rbr(context):
 # Stage 5 – BURN SEVERITY
 # ─────────────────────────────
 
-@register(Dependency.BURN_SEVERITY)
-def compute_burn_severity(context):
+@register(Dependency.DNBR_SEVERITY)
+def compute_dnbr_severity(context):
     dnbr = context.get(Dependency.DNBR) 
     if dnbr is None:
         raise RuntimeError("DNBR not available")
@@ -251,28 +251,94 @@ def compute_burn_severity(context):
         .where(dnbr.gte(0.27).And(dnbr.lt(0.44)), 2)  # Moderate
         .where(dnbr.gte(0.44).And(dnbr.lt(0.66)), 3)  # High
         .where(dnbr.gte(0.66), 4)                     # Very High
-        .rename("burn_severity")
+        .rename("dnbr_severity")
         .toInt8()
     )
 
     return severity
 
+@register(Dependency.DNDVI_SEVERITY)
+def compute_dndvi_severity(context):
+    dndvi = context.get(Dependency.DNDVI)
+
+    return (
+        ee.Image(0)  # Unburned (< 0.07)
+        .where(dndvi.gte(0.07).And(dndvi.lt(0.20)), 1)   # Low
+        .where(dndvi.gte(0.20).And(dndvi.lt(0.33)), 2)  # Moderate
+        .where(dndvi.gte(0.33).And(dndvi.lt(0.44)), 3)  # High
+        .where(dndvi.gte(0.45), 4)                      # Very High
+        .rename("dndvi_severity")
+        .toInt8()
+    )
+
+@register(Dependency.RBR_SEVERITY)
+def compute_rbr_severity(context):
+    rbr = context.get(Dependency.RBR)
+    if rbr is None:
+        raise RuntimeError("RBR not available")
+
+    return (
+        ee.Image(0)
+        .where(rbr.gte(0.10).And(rbr.lt(0.27)), 1)
+        .where(rbr.gte(0.27).And(rbr.lt(0.44)), 2)
+        .where(rbr.gte(0.44).And(rbr.lt(0.66)), 3)
+        .where(rbr.gte(0.66), 4)
+        .rename("rbr_severity")
+        .toInt8()
+    )
+
+
 # ─────────────────────────────
 # Stage 6 – STATISTICS
 # ─────────────────────────────
 
-@register(Dependency.BURNED_AREA_STATISTICS)
-def compute_burned_area_statistics(context):
-    severity = context.get(Dependency.BURN_SEVERITY)
-    roi = context.inputs["roi"]
+SEVERITY_LABELS = {
+    0: "Unburned",
+    1: "Low Severity",
+    2: "Moderate Severity",
+    3: "High Severity",
+    4: "Very High Severity",
+}
 
-    if severity is None:
-        raise RuntimeError("BURN_SEVERITY not available")
 
-    pixel_area = ee.Image.pixelArea().divide(10_000)  # m² → ha
+def format_area_statistics(stats):
+    """
+    Convert EE grouped reduce output into paper-ready statistics.
+    """
+    total_area = sum(item["sum"] for item in stats)
+    burned_area = sum(
+        item["sum"] for item in stats if item["severity_class"] > 0
+    )
+
+    result = {}
+
+    for item in stats:
+        label = SEVERITY_LABELS[item["severity_class"]]
+        area = item["sum"]
+        ratio = (area / total_area) * 100 if total_area > 0 else 0
+
+        result[label] = {
+            "area_ha": round(area, 2),
+            "ratio_percent": round(ratio, 2),
+        }
+
+    result["Total Burned Area"] = {
+        "area_ha": round(burned_area, 2),
+        "ratio_percent": round((burned_area / total_area) * 100, 2),
+    }
+
+    result["Total Area"] = {
+        "area_ha": round(total_area, 2),
+        "ratio_percent": 100.0,
+    }
+
+    return result
+
+def compute_area_stats(severity: ee.Image, roi: ee.Geometry):
+    pixel_area = ee.Image.pixelArea().divide(10_000)  # ha
 
     reducer = ee.Reducer.sum().group(
-        groupField=1,          # severity band index
+        groupField=1,
         groupName="severity_class",
     )
 
@@ -290,40 +356,22 @@ def compute_burned_area_statistics(context):
 
     stats = ee.List(stats).getInfo()
 
-    class_map = {
-        0: "Unburned",
-        1: "Low Severity",
-        2: "Moderate Severity",
-        3: "High Severity",
-        4: "Very High Severity",
-    }
+    return format_area_statistics(stats)
 
-    total_area = sum(item["sum"] for item in stats)
-    burned_area = sum(
-        item["sum"] for item in stats if item["severity_class"] > 0
-    )
+@register(Dependency.DNDVI_AREA_STATISTICS)
+def compute_dndvi_area_statistics(context):
+    severity = context.get(Dependency.DNDVI_SEVERITY)
+    roi = context.inputs["roi"]
+    return compute_area_stats(severity, roi)
 
-    result = {}
+@register(Dependency.RBR_AREA_STATISTICS)
+def compute_rbr_area_statistics(context):
+    severity = context.get(Dependency.RBR_SEVERITY)
+    roi = context.inputs["roi"]
+    return compute_area_stats(severity, roi)
 
-    for item in stats:
-        name = class_map[item["severity_class"]]
-        area = item["sum"]
-        ratio = (area / total_area) * 100 if total_area > 0 else 0
-
-        result[name] = {
-            "area_ha": round(area, 2),
-            "ratio_percent": round(ratio, 2),
-        }
-
-    # Totals (paper-style)
-    result["Total Burned Area"] = {
-        "area_ha": round(burned_area, 2),
-        "ratio_percent": round((burned_area / total_area) * 100, 2),
-    }
-
-    result["Total Area"] = {
-        "area_ha": round(total_area, 2),
-        "ratio_percent": 100.0,
-    }
-
-    return result
+@register(Dependency.DNBR_AREA_STATISTICS)
+def compute_dnbr_area_statistics(context):
+    severity = context.get(Dependency.DNBR_SEVERITY)
+    roi = context.inputs["roi"]
+    return compute_area_stats(severity, roi)

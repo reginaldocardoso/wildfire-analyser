@@ -42,5 +42,9 @@ class Dependency(Enum):
     # Fire metrics
     # ─────────────────────────────
     RBR = auto()
-    BURN_SEVERITY = auto()
-    BURNED_AREA_STATISTICS = auto()
+    DNBR_SEVERITY = auto()
+    DNDVI_SEVERITY = auto()
+    RBR_SEVERITY = auto()
+    DNBR_AREA_STATISTICS = auto()
+    DNDVI_AREA_STATISTICS = auto()
+    RBR_AREA_STATISTICS = auto()
