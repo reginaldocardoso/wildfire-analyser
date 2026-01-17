@@ -95,7 +95,7 @@ You should see something like this:
 
 ```bash
 usage: client.py [-h] --roi ROI --start-date START_DATE --end-date END_DATE
-                 [--deliverables DELIVERABLES [DELIVERABLES ...]] [--deliverables-all]
+                 [--deliverables DELIVERABLES [DELIVERABLES ...]]
                  [--days-before-after DAYS_BEFORE_AFTER]
 
 Post-fire assessment using Google Earth Engine
@@ -107,10 +107,11 @@ options:
                         Start date (pre-fire) in YYYY-MM-DD format
   --end-date END_DATE   End date (post-fire) in YYYY-MM-DD format
   --deliverables DELIVERABLES [DELIVERABLES ...]
-                        List of deliverables to generate. Example: --deliverables RGB_PRE_FIRE DNBR
-  --deliverables-all    Generate all available deliverables
+                        List of deliverables to generate. If not provided, all available
+                        deliverables are generated. Example: --deliverables RGB_PRE_FIRE DNBR
   --days-before-after DAYS_BEFORE_AFTER
-                        Number of days before and after the event date to search imagery (default: 30)
+                        Number of days before and after the event date to search imagery
+                        (default: 30)
 ```
 
 ## Setup Instructions for Developers
