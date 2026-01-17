@@ -61,7 +61,6 @@ python3 -m wildfire_analyser.client \
    --roi polygons/canakkale_aoi_1.geojson \
    --start-date 2023-07-01 \
    --end-date 2023-07-21 \
-   --deliverables-all \
    --days-before-after 1
 ```
 
@@ -82,7 +81,6 @@ Possible options for --deliverables are:
    RBR_VISUAL,
    BURN_SEVERITY_VISUAL,
    BURNED_AREA_STATISTICS,
-
    
 This will start the analysis process, generate visual thumbnail links for use by the frontend, and save the scientific GeoTIFF images to the GCP bucket.
 All links will be displayed in the terminal.
@@ -153,7 +151,6 @@ python3 -m wildfire_analyser.client \
    --roi polygons/canakkale_aoi_1.geojson \
    --start-date 2023-07-01 \
    --end-date 2023-07-21 \
-   --deliverables-all \
    --days-before-after 1
 ```
 
