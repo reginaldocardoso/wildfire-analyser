@@ -17,6 +17,8 @@ from wildfire_analyser.fire_assessment.exporters.gcs import (
 )
 from wildfire_analyser.fire_assessment.dependencies import Dependency
 
+import logging
+
 
 class PostFireAssessment:
 
@@ -32,7 +34,11 @@ class PostFireAssessment:
         cloud_threshold: int = 70,
         days_before_after: int = 30,
         gcs_bucket: str | None = None,
+        verbose: bool = False,
     ):
+        level = logging.INFO if verbose else logging.WARNING
+        logging.getLogger("wildfire_analyser").setLevel(level)
+
         authenticate_gee(gee_key_json)
 
         start = self._parse_date(start_date, "start_date")

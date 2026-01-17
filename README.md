@@ -68,17 +68,22 @@ python3 -m wildfire_analyser.client \
 Possible options for --deliverables are:
    RGB_PRE_FIRE,
    RGB_POST_FIRE,
+   NDVI_PRE_FIRE,
+   NDVI_POST_FIRE,
    NBR_PRE_FIRE,
    NBR_POST_FIRE,
+   DNDVI,
    DNBR,
    RBR,
    BURN_SEVERITY_MAP,
    RGB_PRE_FIRE_VISUAL,
    RGB_POST_FIRE_VISUAL,
    DNBR_VISUAL,
+   RBR_VISUAL,
    BURN_SEVERITY_VISUAL,
    BURNED_AREA_STATISTICS,
 
+   
 This will start the analysis process, generate visual thumbnail links for use by the frontend, and save the scientific GeoTIFF images to the GCP bucket.
 All links will be displayed in the terminal.
 

@@ -141,6 +141,23 @@ def compute_ndvi_post(context):
         ["B8_refl", "B4_refl"]
     ).rename("ndvi")
 
+
+@register(Dependency.DNDVI)
+def compute_dndvi(context):
+    """
+    Compute differenced NDVI (dNDVI).
+
+    dNDVI = NDVI_pre - NDVI_post
+    """
+    ndvi_pre = context.get(Dependency.NDVI_PRE_FIRE)
+    ndvi_post = context.get(Dependency.NDVI_POST_FIRE)
+
+    if ndvi_pre is None or ndvi_post is None:
+        raise RuntimeError("NDVI_PRE_FIRE or NDVI_POST_FIRE not available")
+
+    return ndvi_pre.subtract(ndvi_post).rename("dndvi")
+
+
 # ─────────────────────────────
 # Stage 2 – NBR
 # ─────────────────────────────
@@ -226,7 +243,7 @@ def compute_rbr(context):
 def compute_burn_severity(context):
     dnbr = context.get(Dependency.DNBR) 
     if dnbr is None:
-        raise RuntimeError("DNBR not available in DAG context")
+        raise RuntimeError("DNBR not available")
 
     severity = (
         ee.Image(0)  # Unburned

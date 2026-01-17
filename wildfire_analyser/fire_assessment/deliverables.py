@@ -10,10 +10,14 @@ class Deliverable(Enum):
     RGB_PRE_FIRE = auto()
     RGB_POST_FIRE = auto()
 
+    NDVI_PRE_FIRE = auto()
+    NDVI_POST_FIRE = auto()
+    DNDVI = auto()
+
     NBR_PRE_FIRE = auto()
     NBR_POST_FIRE = auto()
-
     DNBR = auto()
+
     RBR = auto()
 
     BURN_SEVERITY_MAP = auto()
@@ -28,6 +32,6 @@ class Deliverable(Enum):
     # ─────────────────────────────
     RGB_PRE_FIRE_VISUAL = auto()
     RGB_POST_FIRE_VISUAL = auto()
-
     DNBR_VISUAL = auto()
+    RBR_VISUAL = auto()
     BURN_SEVERITY_VISUAL = auto()

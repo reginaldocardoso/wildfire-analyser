@@ -7,9 +7,28 @@ from pathlib import Path
 from wildfire_analyser.fire_assessment.post_fire_assessment import PostFireAssessment
 from wildfire_analyser.fire_assessment.deliverables import Deliverable
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
+LOG_FORMAT = "%(levelname)s:%(name)s:%(message)s"
+
+# 1. Root handler (needed so library logs can be emitted)
+root_handler = logging.StreamHandler()
+root_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+
+root_logger = logging.getLogger()
+if not root_logger.handlers:
+    root_logger.addHandler(root_handler)
+
+# Default root level (quiet)
+root_logger.setLevel(logging.WARNING)
+
+# Client logger (always visible)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Library logger (controlled by verbose flag in PostFireAssessment)
+lib_logger = logging.getLogger("wildfire_analyser")
+lib_logger.setLevel(logging.WARNING)   # default
+lib_logger.propagate = True            # send to root handler
 
 def main():
     try:
@@ -50,14 +69,9 @@ def main():
             nargs="+",
             help=(
                 "List of deliverables to generate. "
+                "If not provided, all available deliverables are generated. "
                 "Example: --deliverables RGB_PRE_FIRE DNBR"
             ),
-        )
-
-        parser.add_argument(
-            "--deliverables-all",
-            action="store_true",
-            help="Generate all available deliverables"
         )
 
         parser.add_argument(
@@ -69,30 +83,7 @@ def main():
 
         args = parser.parse_args()
 
-        DEFAULT_DELIVERABLES = [
-            Deliverable.RGB_PRE_FIRE,
-            Deliverable.RGB_POST_FIRE,
-            Deliverable.NBR_PRE_FIRE,
-            Deliverable.NBR_POST_FIRE,
-            Deliverable.DNBR,
-            Deliverable.RBR,
-            Deliverable.BURN_SEVERITY_MAP,
-            Deliverable.RGB_PRE_FIRE_VISUAL,
-            Deliverable.RGB_POST_FIRE_VISUAL,
-            Deliverable.DNBR_VISUAL,
-            Deliverable.BURN_SEVERITY_VISUAL,
-            Deliverable.BURNED_AREA_STATISTICS,
-        ]
-
-        if args.deliverables_all and args.deliverables:
-            raise ValueError(
-                "Use either --deliverables-all or --deliverables, not both."
-            )
-
-        if args.deliverables_all:
-            deliverables = list(Deliverable)
-
-        elif args.deliverables:
+        if args.deliverables:
             try:
                 deliverables = [Deliverable[name] for name in args.deliverables]
             except KeyError as e:
@@ -101,9 +92,9 @@ def main():
                     f"Invalid deliverable '{e.args[0]}'. "
                     f"Valid options are: {valid}"
                 )
-
         else:
-            deliverables = DEFAULT_DELIVERABLES
+            # DEFAULT = TODOS
+            deliverables = list(Deliverable)
 
         geojson_path = Path(args.roi).expanduser().resolve()
         if not geojson_path.exists():
@@ -117,6 +108,7 @@ def main():
             days_before_after=args.days_before_after,
             deliverables=deliverables, 
             gcs_bucket=gcs_bucket_name,
+            verbose=True, 
         )
 
         result = runner.run()
