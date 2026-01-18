@@ -11,8 +11,8 @@ def dnbr_visual(image: ee.Image, roi: ee.Geometry) -> ee.Image:
     )
 
     styled = classified.visualize(
-        min=0,
-        max=4,
+        min=0.0,
+        max=4.0,
         palette=[
             "36a402",  # Unburned 
             "fbfb01",  # Low

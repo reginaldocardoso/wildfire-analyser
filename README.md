@@ -129,11 +129,9 @@ You may explicitly select deliverables using `--deliverables`.
 * `DNDVI_VISUAL`
 * `DNBR_VISUAL`
 * `RBR_VISUAL`
-* `DNBR_SEVERITY_VISUAL`
 
 ### Severity maps and statistics
 
-* `DNBR_SEVERITY_MAP`
 * `DNBR_AREA_STATISTICS`
 * `DNDVI_AREA_STATISTICS`
 * `RBR_AREA_STATISTICS`

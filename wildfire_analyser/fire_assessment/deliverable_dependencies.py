@@ -12,10 +12,7 @@ DELIVERABLE_DEPENDENCIES = {
     Deliverable.NBR_PRE_FIRE: {Dependency.NBR_PRE_FIRE},
     Deliverable.NBR_POST_FIRE: {Dependency.NBR_POST_FIRE},
     Deliverable.DNBR: {Dependency.DNBR},
-
     Deliverable.RBR: {Dependency.RBR},
-
-    Deliverable.DNBR_SEVERITY_MAP: {Dependency.DNBR_SEVERITY},
 
     Deliverable.DNBR_AREA_STATISTICS: {Dependency.DNBR_AREA_STATISTICS},
     Deliverable.DNDVI_AREA_STATISTICS: {Dependency.DNDVI_AREA_STATISTICS},
@@ -27,5 +24,4 @@ DELIVERABLE_DEPENDENCIES = {
     Deliverable.DNDVI_VISUAL: {Dependency.DNDVI},
     Deliverable.RBR_VISUAL: {Dependency.RBR},
     Deliverable.DNBR_VISUAL: {Dependency.DNBR},
-    Deliverable.DNBR_SEVERITY_VISUAL: {Dependency.DNBR_SEVERITY},
 }

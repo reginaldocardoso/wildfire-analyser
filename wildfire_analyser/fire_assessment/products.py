@@ -234,62 +234,9 @@ def compute_rbr(context):
     ).rename("rbr")
 
     return rbr
-
+    
 # ─────────────────────────────
-# Stage 5 – BURN SEVERITY
-# ─────────────────────────────
-
-@register(Dependency.DNBR_SEVERITY)
-def compute_dnbr_severity(context):
-    dnbr = context.get(Dependency.DNBR) 
-    if dnbr is None:
-        raise RuntimeError("DNBR not available")
-
-    severity = (
-        ee.Image(0)  # Unburned
-        .where(dnbr.gte(0.10).And(dnbr.lt(0.27)), 1)   # Low
-        .where(dnbr.gte(0.27).And(dnbr.lt(0.44)), 2)  # Moderate
-        .where(dnbr.gte(0.44).And(dnbr.lt(0.66)), 3)  # High
-        .where(dnbr.gte(0.66), 4)                     # Very High
-        .rename("dnbr_severity")
-        .toInt8()
-    )
-
-    return severity
-
-@register(Dependency.DNDVI_SEVERITY)
-def compute_dndvi_severity(context):
-    dndvi = context.get(Dependency.DNDVI)
-
-    return (
-        ee.Image(0)  # Unburned (< 0.07)
-        .where(dndvi.gte(0.07).And(dndvi.lt(0.20)), 1)   # Low
-        .where(dndvi.gte(0.20).And(dndvi.lt(0.33)), 2)  # Moderate
-        .where(dndvi.gte(0.33).And(dndvi.lt(0.44)), 3)  # High
-        .where(dndvi.gte(0.45), 4)                      # Very High
-        .rename("dndvi_severity")
-        .toInt8()
-    )
-
-@register(Dependency.RBR_SEVERITY)
-def compute_rbr_severity(context):
-    rbr = context.get(Dependency.RBR)
-    if rbr is None:
-        raise RuntimeError("RBR not available")
-
-    return (
-        ee.Image(0)
-        .where(rbr.gte(0.10).And(rbr.lt(0.27)), 1)
-        .where(rbr.gte(0.27).And(rbr.lt(0.44)), 2)
-        .where(rbr.gte(0.44).And(rbr.lt(0.66)), 3)
-        .where(rbr.gte(0.66), 4)
-        .rename("rbr_severity")
-        .toInt8()
-    )
-
-
-# ─────────────────────────────
-# Stage 6 – STATISTICS
+# Stage 5 – STATISTICS
 # ─────────────────────────────
 
 SEVERITY_LABELS = {
@@ -335,7 +282,7 @@ def format_area_statistics(stats):
     return result
 
 def compute_area_stats(severity: ee.Image, roi: ee.Geometry):
-    pixel_area = ee.Image.pixelArea().divide(10_000)  # ha
+    pixel_area = ee.Image.pixelArea().divide(10_000)  # m² → ha
 
     reducer = ee.Reducer.sum().group(
         groupField=1,
@@ -358,20 +305,62 @@ def compute_area_stats(severity: ee.Image, roi: ee.Geometry):
 
     return format_area_statistics(stats)
 
+@register(Dependency.DNBR_AREA_STATISTICS)
+def compute_dnbr_area_statistics(context):
+    dnbr = context.get(Dependency.DNBR)
+    roi = context.inputs["roi"]
+
+    if dnbr is None:
+        raise RuntimeError("DNBR not available")
+
+    severity = (
+        ee.Image(0)
+        .where(dnbr.gte(0.10).And(dnbr.lt(0.27)), 1)
+        .where(dnbr.gte(0.27).And(dnbr.lt(0.44)), 2)
+        .where(dnbr.gte(0.44).And(dnbr.lt(0.66)), 3)
+        .where(dnbr.gte(0.66), 4)
+        .rename("severity")
+        .toInt8()
+    )
+
+    return compute_area_stats(severity, roi)
+
 @register(Dependency.DNDVI_AREA_STATISTICS)
 def compute_dndvi_area_statistics(context):
-    severity = context.get(Dependency.DNDVI_SEVERITY)
+    dndvi = context.get(Dependency.DNDVI)
     roi = context.inputs["roi"]
+
+    if dndvi is None:
+        raise RuntimeError("DNDVI not available")
+
+    severity = (
+        ee.Image(0)
+        .where(dndvi.gte(0.10).And(dndvi.lt(0.20)), 1)
+        .where(dndvi.gte(0.20).And(dndvi.lt(0.33)), 2)
+        .where(dndvi.gte(0.33).And(dndvi.lt(0.44)), 3)
+        .where(dndvi.gte(0.45), 4)
+        .rename("severity")
+        .toInt8()
+    )
+
     return compute_area_stats(severity, roi)
 
 @register(Dependency.RBR_AREA_STATISTICS)
 def compute_rbr_area_statistics(context):
-    severity = context.get(Dependency.RBR_SEVERITY)
+    rbr = context.get(Dependency.RBR)
     roi = context.inputs["roi"]
-    return compute_area_stats(severity, roi)
 
-@register(Dependency.DNBR_AREA_STATISTICS)
-def compute_dnbr_area_statistics(context):
-    severity = context.get(Dependency.DNBR_SEVERITY)
-    roi = context.inputs["roi"]
+    if rbr is None:
+        raise RuntimeError("RBR not available")
+
+    severity = (
+        ee.Image(0)
+        .where(rbr.gte(0.10).And(rbr.lt(0.27)), 1)
+        .where(rbr.gte(0.27).And(rbr.lt(0.44)), 2)
+        .where(rbr.gte(0.44).And(rbr.lt(0.66)), 3)
+        .where(rbr.gte(0.66), 4)
+        .rename("severity")
+        .toInt8()
+    )
+
     return compute_area_stats(severity, roi)

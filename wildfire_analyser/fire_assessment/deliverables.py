@@ -20,8 +20,6 @@ class Deliverable(Enum):
 
     RBR = auto()
 
-    DNBR_SEVERITY_MAP = auto()
-
     # ─────────────────────────────
     # Estatísticas
     # ─────────────────────────────
@@ -37,4 +35,3 @@ class Deliverable(Enum):
     DNDVI_VISUAL = auto()
     DNBR_VISUAL = auto()
     RBR_VISUAL = auto()
-    DNBR_SEVERITY_VISUAL = auto()

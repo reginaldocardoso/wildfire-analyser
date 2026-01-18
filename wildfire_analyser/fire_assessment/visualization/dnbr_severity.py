@@ -1,7 +1,7 @@
 import ee
 
 
-def burn_severity_visual(image: ee.Image, roi: ee.Geometry) -> ee.Image:
+def dnbr_severity_visual(image: ee.Image, roi: ee.Geometry) -> ee.Image:
     styled = image.visualize(
         min=0,
         max=4,

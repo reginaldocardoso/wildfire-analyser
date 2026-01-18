@@ -5,8 +5,8 @@ from wildfire_analyser.fire_assessment.visualization.rgb import (
 )
 
 from wildfire_analyser.fire_assessment.visualization.dnbr import dnbr_visual
-from wildfire_analyser.fire_assessment.visualization.burn_severity import (
-    burn_severity_visual,
+from wildfire_analyser.fire_assessment.visualization.dnbr_severity import (
+    dnbr_severity_visual,
 )
 from wildfire_analyser.fire_assessment.visualization.rbr import rbr_visual
 from wildfire_analyser.fire_assessment.visualization.dndvi import dndvi_visual
@@ -17,5 +17,4 @@ VISUAL_RENDERERS = {
     Deliverable.DNDVI_VISUAL: dndvi_visual,
     Deliverable.DNBR_VISUAL: dnbr_visual,
     Deliverable.RBR_VISUAL: rbr_visual,
-    Deliverable.DNBR_SEVERITY_VISUAL: burn_severity_visual,
 }

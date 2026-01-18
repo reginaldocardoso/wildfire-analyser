@@ -67,6 +67,74 @@ PAPER_PRESETS = {
     }
 }
 
+# ─────────────────────────────
+# Paper reference statistics (Table 7 – Sentinel-2)
+# Units: hectares (ha)
+# Source:
+#   "Spatial and statistical analysis of burned areas with Landsat-8/9 and
+#    Sentinel-2 satellites: 2023 Çanakkale forest fires"
+# ─────────────────────────────
+
+PAPER_TABLE_7_STATS = {
+    "Area_1_July_Fire": {
+        "DNBR_AREA_STATISTICS": {
+            "Unburned": 504.98,
+            "Low Severity": 782.86,
+            "Moderate Severity": 1194.22,
+            "High Severity": 614.84,
+            "Very High Severity": 215.18,
+            "Total Burned Area": 2807.10,
+            "Total Area": 3312.08,
+        },
+        "DNDVI_AREA_STATISTICS": {
+            "Unburned": 772.44,
+            "Low Severity": 1203.05,
+            "Moderate Severity": 698.01,
+            "High Severity": 329.38,
+            "Very High Severity": 309.20,
+            "Total Burned Area": 2539.64,
+            "Total Area": 3312.08,
+        },
+        "RBR_AREA_STATISTICS": {
+            "Unburned": 602.75,
+            "Low Severity": 1040.66,
+            "Moderate Severity": 1279.64,
+            "High Severity": 387.88,
+            "Very High Severity": 1.15,
+            "Total Burned Area": 2709.33,
+            "Total Area": 3312.08,
+        },
+    },
+    "Area_2_August_Fire": {
+        "DNBR_AREA_STATISTICS": {
+            "Unburned": 607.73,
+            "Low Severity": 888.34,
+            "Moderate Severity": 1229.69,
+            "High Severity": 937.45,
+            "Very High Severity": 781.82,
+            "Total Burned Area": 3837.3,
+            "Total Area": 4445.03,
+        },
+        "DNDVI_AREA_STATISTICS": {
+            "Unburned": 1075.14,
+            "Low Severity": 940.87,
+            "Moderate Severity": 703.67,
+            "High Severity": 681.89,
+            "Very High Severity": 1043.46,
+            "Total Burned Area": 3369.89,
+            "Total Area": 4445.03,
+        },
+        "RBR_AREA_STATISTICS": {
+            "Unburned": 687.17,
+            "Low Severity": 1248.86,
+            "Moderate Severity": 1378.75,
+            "High Severity": 1128.05,
+            "Very High Severity": 2.20,
+            "Total Burned Area": 3757.86,
+            "Total Area": 4445.03,
+        },
+    },
+}
 
 # ─────────────────────────────
 # Main
@@ -206,6 +274,11 @@ def main():
         )
 
         result = runner.run()
+
+        if result["scientific"]:
+            logger.info("Scientific outputs:")
+            for name, item in result["scientific"].items():
+                logger.info("  %s -> %s", name, item["url"])
 
         logger.info("Visual outputs:")
         for name, item in result["visual"].items():

@@ -41,27 +41,15 @@ DEPENDENCY_GRAPH = {
         Dependency.NBR_PRE_FIRE,
     },
 
-    Dependency.DNBR_SEVERITY: {
+    Dependency.DNBR_AREA_STATISTICS: {
         Dependency.DNBR,
     },
 
-    Dependency.DNDVI_SEVERITY: {
+      Dependency.DNDVI_AREA_STATISTICS: {
        Dependency.DNDVI,
     },
 
-    Dependency.RBR_SEVERITY: {
-       Dependency.RBR,
-    },
-
-    Dependency.DNBR_AREA_STATISTICS: {
-        Dependency.DNBR_SEVERITY,
-    },
-
-      Dependency.DNDVI_AREA_STATISTICS: {
-       Dependency.DNDVI_SEVERITY,
-    },
-
     Dependency.RBR_AREA_STATISTICS: {
-       Dependency.RBR_SEVERITY,
+       Dependency.RBR,
     },
 }
