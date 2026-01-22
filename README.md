@@ -1,3 +1,5 @@
+Reginaldo
+
 # wildfire-analyser
 
 Python project for **post-fire assessment and burned area analysis** using **Sentinel-2 imagery** and **Google Earth Engine (GEE)**.
