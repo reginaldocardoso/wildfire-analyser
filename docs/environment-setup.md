@@ -86,6 +86,11 @@ Keep the service account email handy—we will use it to assign bucket permissio
 > - Keep this file secure.  
 > - **Never** upload it to a public repository.
 
+## 4.1. GEE configure and register
+
+1. In Google cloud -> view all products (at the bottom left of the page) -> Earth Engine:
+2. Click on **"Configuration"** -> **"Manage Registration"**
+    - Answer all questions.
 ---
 
 ## 5. Create a Cloud Storage Bucket
