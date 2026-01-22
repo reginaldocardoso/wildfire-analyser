@@ -124,7 +124,7 @@ class PostFireAssessment:
     @staticmethod
     def _load_geojson(path: Path) -> ee.Geometry:
         import json
-        with open(path) as f:
+        with open(path, encoding="utf-8") as f:       # alterei para abrir arquivos no padrão UTF8   Reginaldo Cardoso
             geojson = json.load(f)
         return ee.Geometry(geojson["features"][0]["geometry"])
     
