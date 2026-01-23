@@ -95,6 +95,11 @@ python3 -m wildfire_analyser.client \
   --days-before-after 1
 
 ```
+To Windowns users:
+
+```bash
+python -m wildfire_analyser.client --roi polygons/APAMarinhaLitoralCentro.geojson --start-date 2023-07-01 --end-date 2023-07-21 --deliverables DNBR_VISUAL DNDVI_VISUAL RBR_VISUAL DNBR_AREA_STATISTICS DNDVI_AREA_STATISTICS  RBR_AREA_STATISTICS --days-before-after 15
+```
 
 This will:
 
